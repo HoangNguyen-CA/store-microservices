@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  starter-services:
+    image: ${DOCKER_REGISTRY-}starterservices
+    build:
+      context: .
+      dockerfile: starter-services/Dockerfile
