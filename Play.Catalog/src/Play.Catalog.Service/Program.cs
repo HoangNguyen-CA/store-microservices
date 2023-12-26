@@ -1,6 +1,14 @@
+using Play.Catalog.Service.Models;
+using Play.Catalog.Service.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.Configure<CatalogDatabaseSettings>(
+    builder.Configuration.GetSection("CatalogDatabase"));
+
+builder.Services.AddSingleton<ItemsService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
