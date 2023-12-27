@@ -4,13 +4,12 @@ using Play.Catalog.Service.Models;
 
 namespace Play.Catalog.Service.Services;
 
-public class ItemsService
+public class ItemsService : IItemsService
 {
     private readonly IMongoCollection<Item> _itemsCollection;
 
-    public ItemsService(IOptions<CatalogDatabaseSettings> databaseSettings)
+    public ItemsService(IOptions<CatalogDatabaseSettings> databaseSettings, IMongoClient client)
     {
-        var client = new MongoClient(databaseSettings.Value.ConnectionString);
         var database = client.GetDatabase(databaseSettings.Value.DatabaseName);
         _itemsCollection = database.GetCollection<Item>(databaseSettings.Value.ItemsCollectionName);
     }
@@ -24,7 +23,6 @@ public class ItemsService
     {
         return await _itemsCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
     }
-
     public async Task CreateAsync(Item item)
     {
         await _itemsCollection.InsertOneAsync(item);
@@ -39,6 +37,4 @@ public class ItemsService
     {
         await _itemsCollection.DeleteOneAsync(x => x.Id == id);
     }
-
-
 }

@@ -4,14 +4,18 @@ using Play.Catalog.Service.Models;
 using Play.Catalog.Service.Services;
 
 namespace Play.Catalog.Service.Controllers;
+
+
+//TODO: Handle exceptions when id is not a valid ObjectId
+
 [Route("api/[controller]")]
 [ApiController]
 public class ItemsController : ControllerBase
 {
 
-    ItemsService _itemsService;
+    IItemsService _itemsService;
 
-    public ItemsController(ItemsService itemsService)
+    public ItemsController(IItemsService itemsService)
     {
         _itemsService = itemsService;
     }
