@@ -3,7 +3,9 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Play.Catalog.Service.Models;
 
-public class Item
+
+public class Item : IEntity
+
 {
 
     [BsonId]
