@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Play.Catalog.Service.Dtos;
 using Play.Catalog.Service.Models;
-using Play.Catalog.Service.Services;
+
+using Play.Common;
 
 namespace Play.Catalog.Service.Controllers;
 
@@ -23,7 +24,7 @@ public class ItemsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ItemDto>>> Get()
     {
-        var items = await _itemsRepository.GetAsync();
+        var items = await _itemsRepository.GetAllAsync();
         return Ok(items.Select(item => item.AsDto()));
     }
 
