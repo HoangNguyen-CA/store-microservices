@@ -6,23 +6,12 @@ using Microsoft.Extensions.Options;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.Configure<CatalogDatabaseSettings>(
-    builder.Configuration.GetSection(nameof(CatalogDatabaseSettings)));
+// builder.Services.Configure<CatalogDatabaseSettings>(
+//     builder.Configuration.GetSection(nameof(CatalogDatabaseSettings)));
 
 // Inject MongoDB database as a singleton.
-builder.Services.AddSingleton<IMongoDatabase>(serviceProvider =>
-{
-    var settings = serviceProvider.GetRequiredService<IOptions<CatalogDatabaseSettings>>().Value;
 
-    return new MongoClient(settings.ConnectionString).GetDatabase(settings.DatabaseName);
-});
-
-
-builder.Services.AddSingleton<IRepository<Item>>(serviceProvider =>
-{
-    var settings = serviceProvider.GetRequiredService<IOptions<CatalogDatabaseSettings>>().Value;
-    return new MongoRepository<Item>(serviceProvider.GetService<IMongoDatabase>(), settings.ItemsCollectionName);
-});
+builder.Services.AddMongo().AddMongoRepository<Item>("items");
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
