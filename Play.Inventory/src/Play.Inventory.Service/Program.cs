@@ -1,6 +1,7 @@
 using Play.Common.MongoDB;
 using Play.Inventory.Service.Models;
 using Play.Inventory.Service.Clients;
+using Polly;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +14,7 @@ builder.Services.AddMongo().AddMongoRepository<InventoryItem>("inventoryItems");
 builder.Services.AddHttpClient<CatalogClient>(client =>
 {
     client.BaseAddress = new Uri("http://localhost:5161");
-});
+}).AddPolicyHandler(Policy.TimeoutAsync<HttpResponseMessage>(1));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
