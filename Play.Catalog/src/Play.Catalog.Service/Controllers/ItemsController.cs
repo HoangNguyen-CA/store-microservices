@@ -16,6 +16,8 @@ public class ItemsController : ControllerBase
 
     IRepository<Item> _itemsRepository;
 
+    private static int requestCounter = 0;
+
     public ItemsController(IRepository<Item> itemsRepository)
     {
         _itemsRepository = itemsRepository;
@@ -24,6 +26,23 @@ public class ItemsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ItemDto>>> Get()
     {
+        requestCounter++;
+        Console.WriteLine($"Request #{requestCounter}: Starting...");
+
+        if (requestCounter <= 2)
+        {
+            Console.WriteLine($"Request #{requestCounter}: Delaying...");
+            await Task.Delay(TimeSpan.FromSeconds(10));
+        }
+
+        if (requestCounter <= 4)
+        {
+            Console.WriteLine($"Request #{requestCounter}: 500 (Internal Service Error)");
+            return StatusCode(500);
+        }
+
+        Console.WriteLine($"Request #{requestCounter}: 200 (OK)");
+
         var items = await _itemsRepository.GetAllAsync();
         return Ok(items.Select(item => item.AsDto()));
     }
