@@ -22,6 +22,10 @@ builder.Services.AddHttpClient<CatalogClient>(client =>
 {
     Console.WriteLine($"Delaying for {timespan.TotalSeconds} seconds, then making retry {retryAttempt}");
 }))
+.AddTransientHttpErrorPolicy(builder => builder.Or<TimeoutRejectedException>().CircuitBreakerAsync(3, TimeSpan.FromSeconds(15), onBreak: (outcome, timespan) =>
+{
+    Console.WriteLine("Opening the circuit for 15 seconds...");
+}, onReset: () => Console.WriteLine("Closing the circuit...")))
 
 .AddPolicyHandler(Policy.TimeoutAsync<HttpResponseMessage>(1));
 
