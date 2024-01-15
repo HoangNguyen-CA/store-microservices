@@ -14,13 +14,14 @@ namespace Play.Inventory.Service.Controllers;
 public class ItemsController : ControllerBase
 {
 
-    private readonly IRepository<InventoryItem> _itemsRepository;
-    private readonly CatalogClient _catalogClient;
+    private readonly IRepository<InventoryItem> _inventoryItemsRepository;
 
-    public ItemsController(IRepository<InventoryItem> itemsRepository, CatalogClient catalogClient)
+    private readonly IRepository<CatalogItem> _catalogItemsRepository;
+
+    public ItemsController(IRepository<InventoryItem> inventoryItemsRepository, IRepository<CatalogItem> catalogItemsRepository)
     {
-        _itemsRepository = itemsRepository;
-        _catalogClient = catalogClient;
+        _inventoryItemsRepository = inventoryItemsRepository;
+        _catalogItemsRepository = catalogItemsRepository;
     }
 
     [HttpGet]
@@ -31,9 +32,12 @@ public class ItemsController : ControllerBase
             return BadRequest();
         }
 
-        var catalogItems = await _catalogClient.GetCatalogItemsAsync();
 
-        var inventoryItemEntities = await _itemsRepository.GetAllAsync(item => item.UserId == userId);
+        var inventoryItemEntities = await _inventoryItemsRepository.GetAllAsync(item => item.UserId == userId);
+
+        var itemIds = inventoryItemEntities.Select(item => item.CatalogItemId);
+
+        var catalogItems = await _catalogItemsRepository.GetAllAsync(item => itemIds.Contains(item.Id));
 
         var inventoryItemDtos = inventoryItemEntities.Select(inventoryItem =>
         {
@@ -48,7 +52,7 @@ public class ItemsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> PostAsync(GrantItemsDto grantItemsDto)
     {
-        var inventoryItem = await _itemsRepository.GetAsync(
+        var inventoryItem = await _inventoryItemsRepository.GetAsync(
             item => item.UserId == grantItemsDto.UserId && item.CatalogItemId == grantItemsDto.CatalogItemId);
 
         if (inventoryItem == null)
@@ -61,12 +65,12 @@ public class ItemsController : ControllerBase
                 AcquiredDate = DateTimeOffset.UtcNow
             };
 
-            await _itemsRepository.CreateAsync(inventoryItem);
+            await _inventoryItemsRepository.CreateAsync(inventoryItem);
         }
         else
         {
             inventoryItem.Quantity += grantItemsDto.Quantity;
-            await _itemsRepository.UpdateAsync(inventoryItem.Id, inventoryItem);
+            await _inventoryItemsRepository.UpdateAsync(inventoryItem.Id, inventoryItem);
         }
 
         return Ok();

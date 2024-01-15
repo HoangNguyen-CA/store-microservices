@@ -13,6 +13,7 @@ builder.Services.AddMongo().AddMongoRepository<Item>("items").AddMassTransitWith
 
 // Configure MassTransit
 
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

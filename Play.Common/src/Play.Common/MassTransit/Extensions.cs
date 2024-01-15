@@ -19,8 +19,8 @@ public static class Extensions
                     var configuration = context.GetService<IConfiguration>();
                     var rabbitMQSettings = configuration.GetSection(nameof(RabbitMQSettings)).Get<RabbitMQSettings>();
                     cfg.Host(rabbitMQSettings.Host);
-
                     cfg.ConfigureEndpoints(context);
+                    cfg.UseMessageRetry(retryConfig => retryConfig.Interval(3, 1000));
                 });
             });
         return services;
