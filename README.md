@@ -4,7 +4,7 @@ A system of microservices communicating asynchronously with RabbitMQ. This proje
 
 ## Catalog Service
 
-The catalog service is a REST API that supports basic CRUD operations on catalog items. This service publishes an event to RabbitMQ on modification of catalog items.
+The catalog service is a REST API that supports basic CRUD operations on catalog items. This service publishes an event to RabbitMQ when catalog items are modified.
 
 ## Inventory Service
 
